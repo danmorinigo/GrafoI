@@ -10,6 +10,12 @@ Etiqueta::~Etiqueta(){
 }
 
 void Etiqueta::setAnterior(Vertice* anterior){
+    while(!this->anterior.empty()){
+        (this->anterior).pop_front();
+    }
+    (this->anterior).push_front(anterior);
+}
+void Etiqueta::sumoAnterior(Vertice* anterior){
     this->anterior.push_back(anterior);
     //this->anterior = anterior;
 }

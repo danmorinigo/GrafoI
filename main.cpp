@@ -3,13 +3,14 @@
 #include <ctime>
 #include <list>
 #include <queue>
+#include <stack>
 #include "arista.h"
 #include "vertice.h"
 #include "grafo.h"
 #include "etiqueta.h"
 
 void menu(Grafo* aTrabajar);
-void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> lista, queue<Vertice*> cola, Vertice* actual, Vertice* inicio);
+void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> lista, stack<Vertice*> pila, Vertice* actual, Vertice* inicio);
 using namespace std;
 
 int main()
@@ -367,7 +368,7 @@ void menu(Grafo* aTrabajar){
                                         auxProximo.setPesoAcumulado(miPeso + pesoArista);
                                         auxProximo.setIteracion(verticesVisitados + 1);
                                     }else if(pesoTotal == suPeso){
-                                        auxProximo.setAnterior(verticeVisitado);
+                                        auxProximo.sumoAnterior(verticeVisitado);
                                     }
                                 }
                                 /*
@@ -505,10 +506,10 @@ void menu(Grafo* aTrabajar){
                         cout << " Acumulado: " << (*itEtiq).getPesoAcumulado();
                         cout << " Iteracion: " << (*itEtiq).getIteracion() << endl;
                     }
-                    queue<Vertice*> colaInicial;
-                    colaInicial.push(aTrabajar->obtenerVertice(auxHasta));
+                    stack<Vertice*> pilaInicial;
+                    pilaInicial.push(aTrabajar->obtenerVertice(auxHasta));
                     //anteriores de Llegada
-                    mostrarRuta(comienzoDelCamino, etiquetados, colaInicial, aTrabajar->obtenerVertice(auxHasta), aTrabajar->obtenerVertice(auxDesde));
+                    mostrarRuta(comienzoDelCamino, etiquetados, pilaInicial, aTrabajar->obtenerVertice(auxHasta), aTrabajar->obtenerVertice(auxDesde));
                 }else{
                     cout << "No hay conexion\n";
                 }
@@ -534,46 +535,77 @@ void menu(Grafo* aTrabajar){
 //vertice de llegada (seria el comienzo del camino)
 //uso en el main
 //mostrarRuta("anteriores del final" , "etiquetados", "cola vacia", "Vertice* llegada", "Vertice* inicio")
-void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, queue<Vertice*> cola, Vertice* actual, Vertice* inicio){
+void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, stack<Vertice*> pila, Vertice* actual, Vertice* inicio){
     list<Vertice*> anterioresActual = anteriores;
-    queue<Vertice*> colaActual = cola;
-    cout << "Entro a METODO.." << endl;
+    stack<Vertice*> pilaActual = pila;
     if(anterioresActual.size() == 1){//la lista de anteriores tiene un solo elemento
-        cout << "Un solo elemento.." << endl;
-        colaActual.push(anterioresActual.front());
+        pilaActual.push(anterioresActual.front());
         anterioresActual.pop_front();
-        if(colaActual.back() == inicio){
-            cout << "LLEGAMOS AL INICIO.." << endl;
-            while(!colaActual.empty()){
-                cout << colaActual.front()->obtenerNombreVertice();
-                colaActual.pop();
-                if(!colaActual.empty()){
-                    cout << " <- ";
+        int costoTrayecto = 0, costoAcumulado = 0;
+        if(pilaActual.top() == inicio){
+            cout << "Recorrido minimo encontrado:\n";
+            bool comienzoTramo = true;
+            while(!pilaActual.empty()){
+                cout << pilaActual.top()->obtenerNombreVertice();
+                //cout << "-(";
+                if(comienzoTramo){
+                    cout << "-(+";
+                    comienzoTramo = false;
+                    pilaActual.pop();
+                    list<Etiqueta>:: iterator i;
+                    i = etiquetas.begin();
+                    bool encontrado = false;
+                    while(!encontrado && i != etiquetas.end()){
+                        if((*i).getVertice() == pilaActual.top()){
+                            costoAcumulado = (*i).getPesoAcumulado();
+                            encontrado = true;
+                        }
+                        i++;
+                    }
+                    cout << costoAcumulado << ")->";
+                    costoTrayecto = costoAcumulado;
+                }else{
+                    pilaActual.pop();
+                    list<Etiqueta>:: iterator i;
+                    i = etiquetas.begin();
+                    bool encontrado = false;
+                    while(!pilaActual.empty() && (!encontrado && i != etiquetas.end())){
+                        if((*i).getVertice() == pilaActual.top()){
+                            costoAcumulado = (*i).getPesoAcumulado();
+                            encontrado = true;
+                        }
+                        i++;
+                    }
+                    //pilaActual.pop();
+                    if(!pilaActual.empty()){
+                        cout << "-(+";
+                        cout << costoAcumulado - costoTrayecto << ")->";
+                        costoTrayecto = costoAcumulado;
+                    }else{
+                        cout << "[" << costoAcumulado << "]";
+                    }
                 }
             }
             cout << endl;
             return;
         }else{
             //buscar los anteriores del que esta sobre la cola
-            //anterioresActual = colaActual.front()->
-            cout << "no llegamos todavia.." << endl;
             list<Etiqueta>:: iterator i;
             i = etiquetas.begin();
             bool encontrado = false;
             while(!encontrado && i != etiquetas.end()){
-                cout << "eNTRE AL WHILE.." << endl;
-                cout << colaActual.front()->obtenerNombreVertice() << endl;;
-                if((*i).getVertice() == actual){
-                    cout << "ENTRE AL IF.." << endl;
+                if((*i).getVertice() == pilaActual.top()){
                     anterioresActual = (*i).getAnterior();
                     encontrado = true;
-                    mostrarRuta(anterioresActual, etiquetas, colaActual, anterioresActual.front(), inicio);
+                    mostrarRuta(anterioresActual, etiquetas, pilaActual, anterioresActual.front(), inicio);
                 }
                 i++;
             }
         }
     }else{
+        cout << "Varios caminos mismo costo..." << endl;
         cout << "Falta codigo..." << endl;
+        return;
     }
     cout << "-------------------------------------------------\n";
 }

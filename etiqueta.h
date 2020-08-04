@@ -15,6 +15,7 @@ public:
     ~Etiqueta();
 
     void setAnterior(Vertice* anterior);
+    void sumoAnterior(Vertice* anterior);
     void setPesoAcumulado(int peso);
     void setIteracion(int iteracion);
 
