@@ -9,7 +9,7 @@
 #include "etiqueta.h"
 
 void menu(Grafo* aTrabajar);
-
+void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> lista, queue<Vertice*> cola, Vertice* actual, Vertice* inicio);
 using namespace std;
 
 int main()
@@ -274,12 +274,26 @@ void menu(Grafo* aTrabajar){
                 cout << "Etiquetas.." << endl;
                 for(itEtiq = etiquetados.begin(); itEtiq != etiquetados.end(); itEtiq++){
                     cout << "Estacion: "<< (*itEtiq).getVertice()->obtenerNombreVertice();
-                    cout << " Anterior: ";
+                    cout << " Anterior(es): ";
+
+                    if(!(*itEtiq).getAnterior().empty()){
+                        list<Vertice*> auxVerticesAnteriores = (*itEtiq).getAnterior();
+                        list<Vertice*>::iterator i;
+                        for(i = auxVerticesAnteriores.begin(); i != auxVerticesAnteriores.end(); i++){
+                            cout << (*i)->obtenerNombreVertice() << "-";
+                        }
+                    }else{
+                        cout << "NO";
+                    }
+
+                    /*
                     if((*itEtiq).getAnterior()){
                         cout << (*itEtiq).getAnterior()->obtenerNombreVertice();
                     }else{
                         cout << "NO";
                     }
+                    */
+
                     cout << " Acumulado: " << (*itEtiq).getPesoAcumulado();
                     cout << " Iteracion: " << (*itEtiq).getIteracion() << endl;
                 }
@@ -341,6 +355,22 @@ void menu(Grafo* aTrabajar){
                                 miPeso = auxActual.getPesoAcumulado();
                                 pesoArista = aTrabajar->obtenerPeso1(verticeVisitado, auxProximo.getVertice());
                                 pesoTotal = miPeso + pesoArista;
+                                if(auxProximo.getAnterior().empty()){
+                                    auxProximo.setAnterior(verticeVisitado);
+                                    auxProximo.setPesoAcumulado(miPeso + pesoArista);
+                                    auxProximo.setIteracion(verticesVisitados + 1);
+                                }else{
+                                    int suPeso;
+                                    suPeso = auxProximo.getPesoAcumulado();
+                                    if(pesoTotal < suPeso){
+                                        auxProximo.setAnterior(verticeVisitado);
+                                        auxProximo.setPesoAcumulado(miPeso + pesoArista);
+                                        auxProximo.setIteracion(verticesVisitados + 1);
+                                    }else if(pesoTotal == suPeso){
+                                        auxProximo.setAnterior(verticeVisitado);
+                                    }
+                                }
+                                /*
                                 if(!auxProximo.getAnterior()){
                                     auxProximo.setAnterior(verticeVisitado);
                                     auxProximo.setPesoAcumulado(miPeso + pesoArista);
@@ -356,6 +386,7 @@ void menu(Grafo* aTrabajar){
                                         auxProximo.setAnterior(verticeVisitado);
                                     }
                                 }
+                                */
                                 itEtiq = etiquetados.begin();
                                 bool hecho = false;
                                 while(!hecho){
@@ -429,11 +460,19 @@ void menu(Grafo* aTrabajar){
                 }
                 itEtiq = etiquetados.begin();
                 bool hayCamino = false;
+                list<Vertice*> comienzoDelCamino;
                 while(!hayCamino && itEtiq != etiquetados.end()){
-                    if((*itEtiq).getVertice() == aTrabajar->obtenerVertice(auxHasta)){
-                        if((*itEtiq).getAnterior()){
-                            hayCamino = true;
+                    list<Vertice*> auxVerticesAnteriores = (*itEtiq).getAnterior();
+                    list<Vertice*>::iterator i;
+                    i = auxVerticesAnteriores.begin();
+                    while(!hayCamino && i != auxVerticesAnteriores.end()){
+                        if((*itEtiq).getVertice() == aTrabajar->obtenerVertice(auxHasta)){
+                            if (!(*itEtiq).getAnterior().empty()){
+                                comienzoDelCamino = (*itEtiq).getAnterior();
+                                hayCamino = true;
+                            }
                         }
+                        i++;
                     }
                     itEtiq++;
                 }
@@ -443,15 +482,33 @@ void menu(Grafo* aTrabajar){
                     cout << "Etiquetas.." << endl;
                     for(itEtiq = etiquetados.begin(); itEtiq != etiquetados.end(); itEtiq++){
                         cout << "Estacion: "<< (*itEtiq).getVertice()->obtenerNombreVertice();
-                        cout << " Anterior: ";
-                        if((*itEtiq).getAnterior()){
-                            cout << (*itEtiq).getAnterior()->obtenerNombreVertice();
+                        cout << " Anterior(es): ";
+
+                        if(!(*itEtiq).getAnterior().empty()){
+                            list<Vertice*> auxVerticesAnteriores = (*itEtiq).getAnterior();
+                            list<Vertice*>::iterator i;
+                            for(i = auxVerticesAnteriores.begin(); i != auxVerticesAnteriores.end(); i++){
+                                cout << (*i)->obtenerNombreVertice() << "-";
+                            }
                         }else{
-                            cout << "NO";
+                        cout << "NO";
                         }
+
+                    /*
+                    if((*itEtiq).getAnterior()){
+                        cout << (*itEtiq).getAnterior()->obtenerNombreVertice();
+                    }else{
+                        cout << "NO";
+                    }
+                    */
+
                         cout << " Acumulado: " << (*itEtiq).getPesoAcumulado();
                         cout << " Iteracion: " << (*itEtiq).getIteracion() << endl;
                     }
+                    queue<Vertice*> colaInicial;
+                    colaInicial.push(aTrabajar->obtenerVertice(auxHasta));
+                    //anteriores de Llegada
+                    mostrarRuta(comienzoDelCamino, etiquetados, colaInicial, aTrabajar->obtenerVertice(auxHasta), aTrabajar->obtenerVertice(auxDesde));
                 }else{
                     cout << "No hay conexion\n";
                 }
@@ -468,4 +525,55 @@ void menu(Grafo* aTrabajar){
     }
     }while(opcion != 11);
 
+}
+
+//Listado Vertices anteriores (de donde vengo)
+//Listado etiquetas para referencia(no se modifica nunca)
+//Cola relativa, una vez que llegue al comienzo tienen que imprimir
+//Vertice donde estoy parado
+//vertice de llegada (seria el comienzo del camino)
+//uso en el main
+//mostrarRuta("anteriores del final" , "etiquetados", "cola vacia", "Vertice* llegada", "Vertice* inicio")
+void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, queue<Vertice*> cola, Vertice* actual, Vertice* inicio){
+    list<Vertice*> anterioresActual = anteriores;
+    queue<Vertice*> colaActual = cola;
+    cout << "Entro a METODO.." << endl;
+    if(anterioresActual.size() == 1){//la lista de anteriores tiene un solo elemento
+        cout << "Un solo elemento.." << endl;
+        colaActual.push(anterioresActual.front());
+        anterioresActual.pop_front();
+        if(colaActual.back() == inicio){
+            cout << "LLEGAMOS AL INICIO.." << endl;
+            while(!colaActual.empty()){
+                cout << colaActual.front()->obtenerNombreVertice();
+                colaActual.pop();
+                if(!colaActual.empty()){
+                    cout << " <- ";
+                }
+            }
+            cout << endl;
+            return;
+        }else{
+            //buscar los anteriores del que esta sobre la cola
+            //anterioresActual = colaActual.front()->
+            cout << "no llegamos todavia.." << endl;
+            list<Etiqueta>:: iterator i;
+            i = etiquetas.begin();
+            bool encontrado = false;
+            while(!encontrado && i != etiquetas.end()){
+                cout << "eNTRE AL WHILE.." << endl;
+                cout << colaActual.front()->obtenerNombreVertice() << endl;;
+                if((*i).getVertice() == actual){
+                    cout << "ENTRE AL IF.." << endl;
+                    anterioresActual = (*i).getAnterior();
+                    encontrado = true;
+                    mostrarRuta(anterioresActual, etiquetas, colaActual, anterioresActual.front(), inicio);
+                }
+                i++;
+            }
+        }
+    }else{
+        cout << "Falta codigo..." << endl;
+    }
+    cout << "-------------------------------------------------\n";
 }

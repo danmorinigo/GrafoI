@@ -1,12 +1,13 @@
 #ifndef ETIQUETA_H_INCLUDED
 #define ETIQUETA_H_INCLUDED
-
+#include <list>
 #include "vertice.h"
 
 class Etiqueta{
 private:
     Vertice* vertice;
-    Vertice* anterior;
+    //Vertice* anterior;
+    list<Vertice*> anterior;
     int pesoAcumulado;
     int iteracion;
 public:
@@ -18,7 +19,7 @@ public:
     void setIteracion(int iteracion);
 
     Vertice* getVertice();
-    Vertice* getAnterior();
+    list<Vertice*> getAnterior();
     int getPesoAcumulado();
     int getIteracion();
 };
