@@ -9,17 +9,32 @@
 #include "grafo.h"
 #include "etiqueta.h"
 
+using namespace std;
+
 void menu(Grafo* aTrabajar);
 void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> lista, stack<Vertice*> pila, Vertice* actual, Vertice* inicio);
-using namespace std;
+
+//Necesito....
+//  Lista etiquetados**
+//  vertice inicio (una lista de vertices)**
+//  vertice destino**
+//  pila<tuplas> (vertice, costo acumulado)**
+//  booleano primeraPasada
+struct Tupla{
+    Vertice* vertice = 0;
+    int pesoAcumulado = 0;
+};
+void mostrarVer2(list<Etiqueta> etiquetados, list<Vertice*> recorriendoDesde, Vertice* destino, stack<Tupla> caminoRecorrido, bool primeraPasada);
+void mostrarPilaTuplas(stack<Tupla> aMostrar);
+
 
 int main()
 {
     srand(time(NULL));
 
-    string estaciones[] = {"TIJ", "MTY", "MZT", "BJX", "GDL", "SAN", "TAM", "MEX", "MID", "CUN"};
+    string estaciones[] = {"TIJ", "MTY", "MZT", "BJX", "GDL", "SAN", "TAM", "MEX", "MID", "CUN", "FAN", "CIF"};
     Grafo* gra = new Grafo;
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 12; i++){
         gra->agregarVertice(estaciones[i]);
     }
     gra->agregarArista(gra->obtenerVertice("TIJ"), gra->obtenerVertice("MTY"), 800, 0);
@@ -32,12 +47,14 @@ int main()
     gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MEX"), 500, 0);
     gra->agregarArista(gra->obtenerVertice("CUN"), gra->obtenerVertice("GDL"), 650, 0);
     gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("CUN"), 650, 0);
-    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("MEX"), 400, 0);//350
+    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("MEX"), 500, 0);//350
     gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("TAM"), 400, 0);
     gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("SAN"), 400, 0);//900
-    gra->agregarArista(gra->obtenerVertice("SAN"), gra->obtenerVertice("MID"), 1200, 0);
-    gra->agregarArista(gra->obtenerVertice("TAM"), gra->obtenerVertice("MID"), 1200, 0);//450
-    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("MID"), 1200, 0);//450
+    gra->agregarArista(gra->obtenerVertice("SAN"), gra->obtenerVertice("MID"), 450, 0);//1200
+    gra->agregarArista(gra->obtenerVertice("TAM"), gra->obtenerVertice("MID"), 450, 0);
+    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("MID"), 450, 0);
+    gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("FAN"), 630, 0);
+    gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("CIF"), 350, 0);
 
     menu(gra);
     cout << "FIN" << endl;
@@ -768,7 +785,20 @@ void menu(Grafo* aTrabajar){
                     stack<Vertice*> pilaInicial;
                     pilaInicial.push(aTrabajar->obtenerVertice(auxHasta));
                     //Falta comentar y mejorar
-                    mostrarRuta(comienzoDelCamino, etiquetados, pilaInicial, aTrabajar->obtenerVertice(auxHasta), aTrabajar->obtenerVertice(auxDesde));
+                    //mostrarRuta(comienzoDelCamino, etiquetados, pilaInicial, aTrabajar->obtenerVertice(auxHasta), aTrabajar->obtenerVertice(auxDesde));
+                    //-----------------------------------------------------
+                    //Necesito....
+                    //  Lista etiquetados
+                    //  vertice inicio (una lista de vertices)**
+                    //  vertice destino**
+                    //  pila<tuplas> (vertice, costo acumulado)**
+                    //  booleano primeraPasada
+                    list<Vertice*> inicioRecorrido;
+                    inicioRecorrido.push_front(aTrabajar->obtenerVertice(auxHasta));
+                    stack<Tupla> pilaTuplas;
+                    bool primerLlamado = true;
+                    mostrarVer2(etiquetados, inicioRecorrido, aTrabajar->obtenerVertice(auxDesde), pilaTuplas, primerLlamado);
+                    //-----------------------------------------------------
                     cout << "-------------------------------------------------\n";
                 }else{
                     cout << "No hay conexion\n";
@@ -878,4 +908,123 @@ void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, stack<Vert
         }
         return;
     }
+}
+
+//Pasos que debe realizar metodo:
+    // hago pila local
+    // aux Vertice*
+    // recorriendoDsd longitud 1
+    //          de recorriendoDsd retiro el vertice
+    //          tupla aux, peso acumulado aux
+    //      recorriendoDsd == lugarDePartida y no es el primer llamado al metodo
+    //          apilo tupla (en pila local)
+    //          imprime pila
+    //          RETURN
+    //      sino
+    //          apilo tupla (en pila local)
+    //          consulto antecesores de aux
+    //          coloco booleano en falso
+    //          llamo de nuevo a mostrar
+    //          RETURN
+    // recorriendoDsd longitud mayor 1 (varios caminos)
+    //      mientras recorriendoDsd no este vacio
+    //          aux Vertice*
+    //          consulto 1 elemento de recorriendoDsd (en aux)
+    //          retiro dicho elemento de recorriendoDsd (de la lista)
+    //          apilo tupla aux, peso acumulado aux (en pila local)
+    //          consulto antecesores de aux
+    //          coloco booleano en falso
+    //          llamo de nuevo a mostrar
+    //          retiro tupla aux, peso acumulado aux (de pila local)
+    //      RETURN
+    // inicio longitud 0 no puede pasar!!
+    //      Cartel mostrando un error
+void mostrarVer2(list<Etiqueta> etiquetados, list<Vertice*> recorriendoDesde, Vertice* destino, stack<Tupla> caminoRecorrido, bool primeraPasada){
+    stack<Tupla> PilaLocal = caminoRecorrido;//entra vacio
+    Tupla tuplaLocal;
+    Vertice* aux;
+    if(recorriendoDesde.size() == 1){
+        aux = recorriendoDesde.front();
+        tuplaLocal.vertice = aux;
+        list<Etiqueta>::iterator i;
+        i = etiquetados.begin();
+        bool encontrado = false;
+        while(!encontrado && i != etiquetados.end()){
+            if((*i).getVertice() == aux){
+                tuplaLocal.pesoAcumulado = (*i).getPesoAcumulado();
+                encontrado = true;
+            }
+            i++;
+        }
+        if((aux == destino) && !primeraPasada){
+            PilaLocal.push(tuplaLocal);
+            cout << "-------------------------" << endl;
+            cout << "MOSTRAR TODO EL RECORRIDO" << endl;
+            cout << "-------------------------" << endl;
+            mostrarPilaTuplas(PilaLocal);
+            return;
+        }else{
+            PilaLocal.push(tuplaLocal);
+            list<Vertice*> recorriendoDesdeLocal;
+            i = etiquetados.begin();
+            bool encontrado = false;
+            while(!encontrado && i != etiquetados.end()){
+                if((*i).getVertice() == aux){
+                    recorriendoDesdeLocal = (*i).getAnterior();
+                    encontrado = true;
+                }
+                i++;
+            }
+            bool primerRecorrido = false;
+            mostrarVer2(etiquetados, recorriendoDesdeLocal, destino, PilaLocal, primerRecorrido);
+            return;
+        }
+    }else if(recorriendoDesde.size() > 1){
+        while(!recorriendoDesde.empty()){
+            aux = recorriendoDesde.front();
+            recorriendoDesde.pop_front();
+            tuplaLocal.vertice = aux;
+            list<Etiqueta>::iterator i;
+            i = etiquetados.begin();
+            bool encontrado = false;
+            list<Vertice*> recorriendoDesdeLocal;
+            while(!encontrado && i != etiquetados.end()){
+                if((*i).getVertice() == aux){
+                    tuplaLocal.pesoAcumulado = (*i).getPesoAcumulado();
+                    recorriendoDesdeLocal = (*i).getAnterior();
+                    encontrado = true;
+                }
+                i++;
+            }
+            PilaLocal.push(tuplaLocal);
+            bool primerRecorrido = false;
+            mostrarVer2(etiquetados, recorriendoDesdeLocal, destino, PilaLocal, primerRecorrido);
+            PilaLocal.pop();
+        }
+        return;
+    }else{
+        cout << "---------------------------" << endl;
+        cout << "NO TIENE ANTECESORES, ERROR!" << endl;
+        cout << "---------------------------" << endl;
+        return;
+    }
+}
+void mostrarPilaTuplas(stack<Tupla> aMostrar){
+    Tupla mostrando;
+    int pesoTotal = 0, pesoAnterior = 0, pesoArista = 0;
+    bool primerVertice = true;
+    while(!aMostrar.empty()){
+        mostrando = aMostrar.top();
+        if(primerVertice){
+            cout << (mostrando.vertice)->obtenerNombreVertice();
+            primerVertice = false;
+        }else{
+            pesoTotal = mostrando.pesoAcumulado;
+            pesoArista = pesoTotal - pesoAnterior;
+            cout << "-(+" << pesoArista << ")->" << (mostrando.vertice)->obtenerNombreVertice();
+            pesoAnterior = pesoTotal;
+        }
+        aMostrar.pop();
+    }
+    cout << "[" << pesoTotal << "]" << endl;
 }
