@@ -58,7 +58,8 @@ void menu(Grafo* aTrabajar){
     cout << "8- Lista Adyacencia\n";
     cout << "9- Matriz Adyacencias y costos\n";
     cout << "10- Recorridos menor costo\n";
-    cout << "11- Salir\n";
+    cout << "11- Recorridos menor costo (ver II)\n";
+    cout << "12- Salir\n";
     cout << "Opcion: ";
     cin >> opcion;
     switch(opcion){
@@ -498,10 +499,291 @@ void menu(Grafo* aTrabajar){
 
             break;
         }
+        case 11:{
+            string auxDesde, auxHasta;
+            cout << "VIAJE MENOR COSTO (Ver II)\n";
+            cout << "Desde: ";
+            cin >> auxDesde;
+            cout << "Hasta:";
+            cin >> auxHasta;
+            bool primeraEntrada = true; //Lo uso para el caso en que la salida y la
+                                        //llegada sea la misma
+            bool existeDesde = aTrabajar->existeVertice(auxDesde);
+            bool existeHasta = aTrabajar->existeVertice(auxHasta);
+            if(existeDesde && existeHasta){
+                int iteracion = 1;
+
+                queue<Vertice*> colaMaestra;    //En cada iteracion se suman, ordenados,
+                                                //(primero el de menor peso1)
+                                                //los vertices a los cuales debe visitar
+                colaMaestra.push(aTrabajar->obtenerVertice(auxDesde));  //Comienza desde
+                                                                        //la salida
+                queue<Vertice*> colaAuxiliar;   //En cada iteracion guardo los
+                                                //vertices que hay que visitar
+                                                //en la siguiente iteracion
+                                                //pero no estan ordenados.
+                list<Vertice*> auxParaCola;     //En la lista los ordeno de menor a mayor
+                                                //para luego pasarselos a colaMaestra
+                list<Vertice*> vistos;  //Aca van los vertices ya visitados (marcados)
+
+                list<Etiqueta> etiquetados;
+                list<Etiqueta>::iterator itEtiq;    //Iterador lo uso en todo lo que sigue
+
+                //------------------------------------------------------
+                //Armo la lista de etiquetas con todos los vertices del grafo
+                //Todos los etiquetas (vertices) tendran peso e iteracion = 0
+                Vertice* verticeEnGrafo = aTrabajar->obtenerPrimero();
+                while(verticeEnGrafo){
+                    Etiqueta ingresante(verticeEnGrafo);
+                    etiquetados.push_back(ingresante);
+                    verticeEnGrafo = verticeEnGrafo->obtenerProxVertice();
+                }
+                //------------------------------------------------------
+                Vertice* verticeVisitado;
+                //Unico vertice en la cola, al entrar, es el vertice de partida
+                while(!colaMaestra.empty()){
+                    verticeVisitado = colaMaestra.front();
+                    colaMaestra.pop();  //elimino de la cola vertice que estoy visitando
+
+                    //-------------------------------------------------------------------
+                    bool fueVisitadoAntes = false;
+                    list<Vertice*>::iterator i;
+                    i = vistos.begin();
+                    //Si el vertice que quiero visitar ya fue marcado como visitado
+                    //no lo evalua
+                    while(i != vistos.end() && !fueVisitadoAntes){
+                        if(*i == verticeVisitado){
+                            fueVisitadoAntes = true;
+                        }
+                        i++;
+                    }
+                    //-------------------------------------------------------------------
+
+                    Arista* auxAristas;
+                    //Si fue visitado saltea este if, y retorna al comienzo del while
+                    if(!fueVisitadoAntes){
+                        auxAristas = verticeVisitado->obtenerAristas();
+                        while(auxAristas){
+                            //-------------------------------------------------------------------
+                            //Verifico que los destinos de cada arista del vertice evaluado
+                            //no estan marcados como visitados
+                            fueVisitadoAntes = false;
+                            list<Vertice*>::iterator i;
+                            i = vistos.begin();
+                            while(i != vistos.end() && !fueVisitadoAntes){
+                                if(*i == auxAristas->ConsultarDestino()){
+                                    fueVisitadoAntes = true;
+                                }
+                                i++;
+                            }
+                            //-------------------------------------------------------------------
+                            //Si fue visitado saltea este if, y continua con la siguiente arista
+                            if(!fueVisitadoAntes){
+                                //Comienzo a armar lista para agregar a colaMaestra
+                                colaAuxiliar.push(auxAristas->ConsultarDestino());
+                                //Dos etiquetas auxiliares, uno apuntando al vertice visitado
+                                //el otro apuntando al vertice destino de la arista
+                                Etiqueta auxActual(verticeVisitado), auxDestino(auxAristas->ConsultarDestino());
+                                //Busco dentro de la lista de etiquetas a las que apuntan al mismo vertice
+                                //de las etiquetas auxiliares, y copio sus datos (vertices anteriores,
+                                //peso acumulado e iteracion)
+                                itEtiq = etiquetados.begin();
+                                int losDos = 0;
+                                while(losDos != 2){
+                                    if((*itEtiq).getVertice() == verticeVisitado){
+                                        auxActual = *itEtiq;
+                                        losDos++;
+                                    }
+                                    if((*itEtiq).getVertice() == auxAristas->ConsultarDestino()){
+                                        auxDestino = *itEtiq;
+                                        losDos++;
+                                    }
+                                    itEtiq++;
+                                }
+                                //Verifico si cambio o no el peso total del vertice destino de la arista
+                                int miPeso, pesoArista, pesoTotal;
+                                miPeso = auxActual.getPesoAcumulado();
+                                //Trabajando con el peso1
+                                pesoArista = aTrabajar->obtenerPeso1(verticeVisitado, auxDestino.getVertice());
+                                pesoTotal = miPeso + pesoArista;
+                                if(auxDestino.getAnterior().empty()){   //Si no tiene predecesor no tiene peso
+                                                                        //Asigno anterior a el vertice que
+                                                                        //estoy visitando, peso = al peso
+                                                                        //del vertice que estoy visitando+peso
+                                                                        //de la arista
+                                    auxDestino.setAnterior(verticeVisitado);
+                                    auxDestino.setPesoAcumulado(miPeso + pesoArista);
+                                    auxDestino.setIteracion(iteracion);
+                                }else{  //tiene peso acumulado
+                                    int suPeso;
+                                    suPeso = auxDestino.getPesoAcumulado();
+                                    //Si peso total (acumulado del vertice visitado + arista) menor
+                                    //al peso acumulado del vertice destino de la arista
+                                    //Cambio su anterior, su peso acumulado e iteracion
+                                    if(pesoTotal < suPeso){
+                                        auxDestino.setAnterior(verticeVisitado);
+                                        auxDestino.setPesoAcumulado(miPeso + pesoArista);
+                                        auxDestino.setIteracion(iteracion);
+                                    }else if(pesoTotal == suPeso){  //Si es igual, agrego un nuevo anterior
+                                                                    //y cambio iteracion
+                                        auxDestino.sumoAnterior(verticeVisitado);
+                                        auxDestino.setIteracion(iteracion);
+                                    }
+                                }
+                                //----------------------------
+                                //Reeplazo datos del vertice destino en la lista de etiquetas
+                                itEtiq = etiquetados.begin();
+                                bool hecho = false;
+                                while(!hecho){
+                                    if((*itEtiq).getVertice() == auxDestino.getVertice()){
+                                        *itEtiq = auxDestino;
+                                        hecho = true;
+                                    }
+                                    itEtiq++;
+                                }
+                                //----------------------------
+                            }
+                            auxAristas = auxAristas->consultarSiguiente();
+                        }
+
+                        //Comienzo a ordenar vertices para que vayan en orden a colaMaestra
+
+                        //colaAuxiliar tiene los vertices evaluados arriba.
+                        //auxParaCola es una lista, la lista fue lo que se me ocurrio para poder ordenar
+                        //los vertices segun su peso acumulado.
+
+                        while(!colaAuxiliar.empty()){
+                            //Lista vacia, agrego elemento de la colaAuxiliar, luego lo retiro de la cola
+                            //Esto ocurre solo la primera iteracion
+                            if(auxParaCola.empty()){
+                                auxParaCola.push_front(colaAuxiliar.front());
+                                colaAuxiliar.pop();
+                            }else{
+                                bool agregado = false;
+                                //->pesoEnLista se refiere al peso de la arista que une al vertice que estoy
+                                //visitando hasta el vertice que esta en la lista auxParaCola
+                                //->pesoNuevo desde vertice que estoy visitando hasta vertice que quedo en
+                                //colaAuxiliar
+                                int pesoEnLista, pesoNuevo;
+                                Vertice* verticeEnLista;
+                                list<Vertice*>::iterator i;
+                                i = auxParaCola.begin();
+                                while(!agregado && i != auxParaCola.end()){
+                                    verticeEnLista = *i;
+                                    pesoEnLista = aTrabajar->obtenerPeso1(verticeVisitado, verticeEnLista);
+                                    pesoNuevo = aTrabajar->obtenerPeso1(verticeVisitado, colaAuxiliar.front());
+                                    //Si pesoNuevo es menor o igual a pesoLista inserto en esa posicion
+                                    //de la lista el vertice que esta en la colaAuxiliar, y lo retiro de
+                                    //la cola
+                                    if(pesoNuevo <= pesoEnLista){
+                                    //if(pesoEnLista <= pesoNuevo){
+                                        auxParaCola.insert(i, colaAuxiliar.front());
+                                        colaAuxiliar.pop();
+                                        agregado = true;
+                                    }
+                                    i++;
+                                }
+                                //Si no fue agregado es porque el pesoNuevo es mayor que los que estan en
+                                //la lista, si inserta al final el vertice que esta en la colaAuxiliar,
+                                //y lo retiro de la cola
+                                if(!agregado){
+                                    auxParaCola.push_back(colaAuxiliar.front());
+                                    colaAuxiliar.pop();
+                                }
+                            }
+                        }
+
+                        //Tengo la lista ordenada, de menor a mayor segun su peso (peso de arista)
+                        //y paso los vertices a la colaMaestra
+                        while(!auxParaCola.empty()){
+                            colaMaestra.push(auxParaCola.front());
+                            auxParaCola.pop_front();
+                        }
+
+                        //Este condicional lo puse para el caso de que inicio y fin del viaje sea el mismo
+                        //De esta forma no marco el vertice de salida como visitado si es la primera iteracion
+                        if(auxDesde == auxHasta){
+                            if(primeraEntrada){
+                                primeraEntrada = false;
+                            }else{
+                                vistos.push_back(verticeVisitado);
+                            }
+                        }else{
+                            vistos.push_back(verticeVisitado);
+                        }
+                        iteracion++;
+                    }
+                }
+                //------------------------------------------------------
+                //Solo muestro el orden en que fueron recorridos los vertices
+                Vertice* auxilio;
+                cout << "----------------------------" << endl;
+                cout << "VERTICES MARCADOS (EN ORDEN)" << endl;
+                cout << "----------------------------" << endl;
+                list<Vertice*>::iterator i;
+                for(i = vistos.begin(); i != vistos.end(); i++){
+                    auxilio = *i;
+                    cout << auxilio->obtenerNombreVertice() << endl;
+                }
+                //------------------------------------------------------
+                itEtiq = etiquetados.begin();
+                bool hayCamino = false;
+                list<Vertice*> comienzoDelCamino;
+                while(!hayCamino && itEtiq != etiquetados.end()){
+                    if((*itEtiq).getVertice() == aTrabajar->obtenerVertice(auxHasta)){
+                        if (!(*itEtiq).getAnterior().empty()){
+                            comienzoDelCamino = (*itEtiq).getAnterior();
+                            hayCamino = true;
+                        }
+                    }
+                    itEtiq++;
+                }
+                if(hayCamino){
+                    cout << "------------------" << endl;
+                    cout << "Se encontro camino\n";
+                    cout << "------------------" << endl;
+                    //-----------------------------------------------------------------
+                    //Solo muestro etiquetas finales
+                    cout << "----------------" << endl;
+                    cout << "ETIQUETADO FINAL" << endl;
+                    cout << "----------------" << endl;
+                    for(itEtiq = etiquetados.begin(); itEtiq != etiquetados.end(); itEtiq++){
+                        cout << "Estacion: "<< (*itEtiq).getVertice()->obtenerNombreVertice();
+                        cout << " Anterior(es): ";
+
+                        if(!(*itEtiq).getAnterior().empty()){
+                            list<Vertice*> auxVerticesAnteriores = (*itEtiq).getAnterior();
+                            list<Vertice*>::iterator i;
+                            for(i = auxVerticesAnteriores.begin(); i != auxVerticesAnteriores.end(); i++){
+                                cout << (*i)->obtenerNombreVertice() << "-";
+                            }
+                        }else{
+                        cout << "NO";
+                        }
+                        cout << " Acumulado: " << (*itEtiq).getPesoAcumulado();
+                        cout << " Iteracion: " << (*itEtiq).getIteracion() << endl;
+                    }
+                    //-----------------------------------------------------------------
+
+                    stack<Vertice*> pilaInicial;
+                    pilaInicial.push(aTrabajar->obtenerVertice(auxHasta));
+                    //Falta comentar y mejorar
+                    mostrarRuta(comienzoDelCamino, etiquetados, pilaInicial, aTrabajar->obtenerVertice(auxHasta), aTrabajar->obtenerVertice(auxDesde));
+                    cout << "-------------------------------------------------\n";
+                }else{
+                    cout << "No hay conexion\n";
+                }
+            }else{
+                cout << "No existe DESDE o HASTA\n";
+            }
+            cin.get();
+            cin.get();
+            break;
+        }
         default:
             break;
     }
-    }while(opcion != 11);
+    }while(opcion != 12);
 
 }
 
@@ -512,6 +794,7 @@ void menu(Grafo* aTrabajar){
 //vertice de llegada (seria el comienzo del camino)
 //uso en el main
 //mostrarRuta("anteriores del final" , "etiquetados", "cola vacia", "Vertice* llegada", "Vertice* inicio")
+
 void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, stack<Vertice*> pila, Vertice* actual, Vertice* inicio){
     list<Vertice*> anterioresActual = anteriores;
     stack<Vertice*> pilaActual = pila;
@@ -520,7 +803,9 @@ void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, stack<Vert
         anterioresActual.pop_front();
         int costoTrayecto = 0, costoAcumulado = 0;
         if(pilaActual.top() == inicio){
+            cout << "----------------------------\n";
             cout << "Recorrido minimo encontrado:\n";
+            cout << "----------------------------\n";
             bool comienzoTramo = true;
             while(!pilaActual.empty()){
                 cout << pilaActual.top()->obtenerNombreVertice();
@@ -578,12 +863,14 @@ void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, stack<Vert
                 }
                 i++;
             }
+            return;
         }
     }else{
-        cout << "Varios caminos mismo costo..." << endl;
+        cout << "--------------------------\n";
+        cout << "VARIOS CAMINOS MISMO COSTO" << endl;
+        cout << "--------------------------\n";
         list<Vertice*> unoDeVariosAnteriores;
         while(!anterioresActual.empty()){
-            cout << "Busco anterior de los anteriores..." << endl;
             unoDeVariosAnteriores.push_front(anterioresActual.front());
             mostrarRuta(unoDeVariosAnteriores, etiquetas, pilaActual, actual, inicio);
             anterioresActual.pop_front();
@@ -591,5 +878,4 @@ void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, stack<Vert
         }
         return;
     }
-    cout << "-------------------------------------------------\n";
 }
