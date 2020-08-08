@@ -19,7 +19,7 @@ public:
     void eliminarArista(Vertice* inicio, Vertice* destino);
     void eliminarVertice(Vertice* aEliminar);
     int obtenerPeso1(Vertice* inicio, Vertice* destino);
-    int obtenerPeso2(Vertice* inicio, Vertice* destino);
+    double obtenerPeso2(Vertice* inicio, Vertice* destino);
     int grandor();
     Vertice* obtenerVertice(string nombre);
     Vertice* obtenerPrimero();

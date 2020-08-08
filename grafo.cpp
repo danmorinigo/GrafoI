@@ -49,7 +49,7 @@ int Grafo::obtenerPeso1(Vertice* inicio, Vertice* destino){
     }
     return -1;
 }
-int Grafo::obtenerPeso2(Vertice* inicio, Vertice* destino){
+double Grafo::obtenerPeso2(Vertice* inicio, Vertice* destino){
     if(!inicio || !destino){
         cout << "Error salida / llegada\n";
         return 0;

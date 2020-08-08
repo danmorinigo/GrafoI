@@ -4,7 +4,7 @@ Arista::Arista(Vertice* destino){
     sig = 0;
     this->destino = destino;
     peso1 = -1;
-    peso2 = -1;
+    peso2 = -1.0;
     cout << "Constructor Arista" << endl;
 }
 Arista::~Arista(){
@@ -16,7 +16,7 @@ void Arista::asignarSiguiente(Arista* sig){
 void Arista::asignarPeso1(int peso1){
     this->peso1 = peso1;
 }
-void Arista::asignarPeso2(int peso2){
+void Arista::asignarPeso2(double peso2){
     this->peso2 = peso2;
 }
 
@@ -29,6 +29,6 @@ Vertice* Arista::ConsultarDestino(){
 int Arista::cunsultarPeso1(){
     return peso1;
 }
-int Arista::consultarPeso2(){
+double Arista::consultarPeso2(){
     return peso2;
 }

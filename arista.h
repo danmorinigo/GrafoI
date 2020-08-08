@@ -11,18 +11,18 @@ private:
     Arista* sig;
     Vertice* destino;
     int peso1;
-    int peso2;
+    double peso2;
 public:
     Arista(Vertice* destino);
     ~Arista();
     void asignarSiguiente(Arista* sig);
     void asignarPeso1(int peso1);
-    void asignarPeso2(int peso2);
+    void asignarPeso2(double peso2);
 
     Arista* consultarSiguiente();
     Vertice* ConsultarDestino();
     int cunsultarPeso1();
-    int consultarPeso2();
+    double consultarPeso2();
 
 };
 
