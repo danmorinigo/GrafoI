@@ -53,24 +53,24 @@ int main()
     }
     return 0;
     */
-    gra->agregarArista(gra->obtenerVertice("TIJ"), gra->obtenerVertice("MTY"), 800, 0);
-    gra->agregarArista(gra->obtenerVertice("MTY"), gra->obtenerVertice("BJX"), 700, 0);
-    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MTY"), 450, 0);
-    gra->agregarArista(gra->obtenerVertice("MZT"), gra->obtenerVertice("TIJ"), 400, 0);
-    gra->agregarArista(gra->obtenerVertice("MZT"), gra->obtenerVertice("BJX"), 300, 0);
-    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MZT"), 500, 0);
-    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("BJX"), 250, 0);
-    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MEX"), 500, 0);
-    gra->agregarArista(gra->obtenerVertice("CUN"), gra->obtenerVertice("GDL"), 650, 0);
-    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("CUN"), 650, 0);
-    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("MEX"), 500, 0);//350
-    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("TAM"), 400, 0);
-    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("SAN"), 400, 0);//900
-    gra->agregarArista(gra->obtenerVertice("SAN"), gra->obtenerVertice("MID"), 450, 0);//1200
-    gra->agregarArista(gra->obtenerVertice("TAM"), gra->obtenerVertice("MID"), 450, 0);
-    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("MID"), 450, 0);
-    gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("FAN"), 630, 0);
-    gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("CIF"), 350, 0);
+    gra->agregarArista(gra->obtenerVertice("TIJ"), gra->obtenerVertice("MTY"), 800, 1.5);
+    gra->agregarArista(gra->obtenerVertice("MTY"), gra->obtenerVertice("BJX"), 700, 2.9);
+    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MTY"), 450, 10.5);
+    gra->agregarArista(gra->obtenerVertice("MZT"), gra->obtenerVertice("TIJ"), 400, 6.6);
+    gra->agregarArista(gra->obtenerVertice("MZT"), gra->obtenerVertice("BJX"), 300, 7.61);
+    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MZT"), 500, 10.36);
+    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("BJX"), 250, 45.36);
+    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MEX"), 500, 111.9);
+    gra->agregarArista(gra->obtenerVertice("CUN"), gra->obtenerVertice("GDL"), 650, 10.97);
+    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("CUN"), 650, 26.65);
+    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("MEX"), 500, 15.64);//350
+    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("TAM"), 400, 3.36);
+    gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("SAN"), 400, 29.9);//900
+    gra->agregarArista(gra->obtenerVertice("SAN"), gra->obtenerVertice("MID"), 450, 11.56);//1200
+    gra->agregarArista(gra->obtenerVertice("TAM"), gra->obtenerVertice("MID"), 450, 78.2);
+    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("MID"), 450, 18.25);
+    gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("FAN"), 630, 26.33);
+    gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("CIF"), 350, 4.66);
 
     menu(gra);
     cout << "FIN" << endl;
@@ -922,7 +922,23 @@ void menu(Grafo* aTrabajar){
 
                         auxAristas = verticeVisitado->obtenerAristas();
                         //AQUI DEBERIA ASIGNARLE UN NUEVO PADRE A auxAristas->ConsultarDestino() EN SU ETIQUETA
-                        //QUE SERIA EL VERTICE VISITADO
+                        //QUE SERIA EL VERTICE VISITADO EN LAS ETIQUETAS!!
+                        //LUEGO OTRO METODO PARA MOSTRAR LOS ETIQUETADOS.....
+                        /*
+                        itEtiq = etiquetados.begin();
+                        bool agregado = false;
+                        while(!agregado && itEtiq != etiquetados.end()){
+                            if((*itEtiq).getVertice() == auxAristas->ConsultarDestino()){
+                                (*itEtiq).sumaAnterior(verticeVisitado);
+                                agregado = true;
+                            }
+                            itEtiq++;
+                        }
+                        if (!agregado){
+                            cout << "Error queriendo agregar padre" << endl;
+                            cin.get();
+                        }
+                        */
                         while(auxAristas){
                             //-------------------------------------------------------------------
                             //Verifico que los destinos de cada arista del vertice evaluado
@@ -960,36 +976,45 @@ void menu(Grafo* aTrabajar){
                                     }
                                     itEtiq++;
                                 }
-                                //Verifico si cambio o no el peso total del vertice destino de la arista
+                                //CAMBIO O NO ETIQUETA DE VERTICES DESTINO DE LA ACTUAL ARISTA???
+                                //---------------------------------------------------------------
+                                //tengo pesos tanto enteros como double
                                 int miPeso, pesoArista, pesoTotal;
+                                double miPesoDouble, pesoAristaDouble, pesoTotalDouble;
                                 miPeso = auxActual.getPesoAcumulado();
-                                //Trabajando con el peso1
+                                miPesoDouble = auxActual.getPesoDouble();
+                                pesoAristaDouble = aTrabajar->obtenerPeso2(verticeVisitado, auxDestino.getVertice());
                                 pesoArista = aTrabajar->obtenerPeso1(verticeVisitado, auxDestino.getVertice());
                                 pesoTotal = miPeso + pesoArista;
+                                pesoTotalDouble = miPesoDouble + pesoAristaDouble;
                                 if(auxDestino.getAnterior().empty()){   //Si no tiene predecesor no tiene peso
                                                                         //Asigno anterior a el vertice que
                                                                         //estoy visitando, peso = al peso
                                                                         //del vertice que estoy visitando+peso
                                                                         //de la arista
-                                    auxDestino.setAnterior(verticeVisitado);
-                                    auxDestino.setPesoAcumulado(miPeso + pesoArista);
+                                    auxDestino.sumoAnterior(verticeVisitado); //ESTO DEBO SACARLO CREO, YA LO HICE ARRIBA
+                                    auxDestino.setPesoAcumulado(pesoTotal);
+                                    auxDestino.setPesoDouble(pesoTotalDouble);
                                     auxDestino.setIteracion(iteracion);
                                 }else{  //tiene peso acumulado
                                     int suPeso;
+                                    double suPesoDouble;
                                     suPeso = auxDestino.getPesoAcumulado();
+                                    suPesoDouble = auxDestino.getPesoDouble();
                                     //Si peso total (acumulado del vertice visitado + arista) menor
                                     //al peso acumulado del vertice destino de la arista
                                     //Cambio su anterior, su peso acumulado e iteracion
                                     //Del vertice que estoy mirando seria, o sea el vertice destino de la arista
-                                    if(pesoTotal < suPeso){ //Te muestro los metodos
-                                        auxDestino.setAnterior(verticeVisitado);
-                                        auxDestino.setPesoAcumulado(miPeso + pesoArista);
+                                    if(((modo == 1) && (pesoTotal < suPeso)) || ((modo == 2) && (pesoTotalDouble < suPesoDouble))){
+                                        auxDestino.setAnterior(verticeVisitado); //ESTO DEBO SACARLO CREO, YA LO HICE ARRIBA
+                                        auxDestino.setPesoAcumulado(pesoTotal);
+                                        auxDestino.setPesoDouble(pesoTotalDouble);
                                         auxDestino.setIteracion(iteracion);
                                     }else if(pesoTotal == suPeso){  //Si es igual, agrego un nuevo anterior
                                                                     //y cambio iteracion
                                                                     //iteracion nada, lo saque de no se que clase
                                                                     //per no le encontre utilidad hasta ahora
-                                        auxDestino.sumoAnterior(verticeVisitado);
+                                        auxDestino.sumoAnterior(verticeVisitado); //ESTO DEBO SACARLO CREO, YA LO HICE ARRIBA
                                         auxDestino.setIteracion(iteracion);
                                     }
                                 }
@@ -1074,6 +1099,7 @@ void menu(Grafo* aTrabajar){
                         cout << "NO";
                         }
                         cout << " Acumulado: " << (*itEtiq).getPesoAcumulado();
+                        cout << " Double: " << (*itEtiq).getPesoDouble();
                         cout << " Iteracion: " << (*itEtiq).getIteracion() << endl;
                     }
                     //-----------------------------------------------------------------

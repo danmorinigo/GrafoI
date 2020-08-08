@@ -6,7 +6,7 @@ Grafo::Grafo(){
     ultimo = 0;
     tamanio = 0;
 }
-void Grafo::agregarArista(Vertice* inicio, Vertice* destino, int p1, int p2){
+void Grafo::agregarArista(Vertice* inicio, Vertice* destino, int p1, double p2){
     if(!inicio || !destino){
         cout << "Error salida / llegada\n";
         return;

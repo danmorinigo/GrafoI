@@ -15,7 +15,7 @@ public:
     void agregarVertice(string nombre);
     //Vertice* obtenerVertice(string nombre);
     bool existeVertice(string nombre);
-    void agregarArista(Vertice* inicio, Vertice* destino, int p1, int p2);
+    void agregarArista(Vertice* inicio, Vertice* destino, int p1, double p2);
     void eliminarArista(Vertice* inicio, Vertice* destino);
     void eliminarVertice(Vertice* aEliminar);
     int obtenerPeso1(Vertice* inicio, Vertice* destino);
