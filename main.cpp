@@ -943,6 +943,55 @@ void menu(Grafo* aTrabajar){
                             i = vistos.begin();
                             while(i != vistos.end() && !fueVisitadoAntes){
                                 if(*i == auxAristas->ConsultarDestino()){
+                                    int pesoYaEvaluado = 0;
+                                    double pesoYaEvaluadoDouble = 0.0;
+
+                                    int pesoArista = 0;
+                                    double pesoAristaDouble = 0.0;
+                                    pesoArista = aTrabajar->obtenerPeso1(verticeVisitado, auxAristas->ConsultarDestino());
+                                    pesoAristaDouble = aTrabajar->obtenerPeso2(verticeVisitado, auxAristas->ConsultarDestino());
+
+                                    int pesoQueCarga = 0;
+                                    double pesoQueCargaDouble = 0.0;
+
+                                    itEtiq = etiquetados.begin();
+                                    int encontrado = 0;
+                                    while((encontrado != 2) && (itEtiq != etiquetados.end())){
+                                        if((*itEtiq).getVertice() == verticeVisitado){//seria "el anterior"
+                                            pesoQueCarga = (*itEtiq).getPesoAcumulado();
+                                            pesoQueCargaDouble = (*itEtiq).getPesoDouble();
+                                            encontrado++;
+                                        }
+                                        if((*itEtiq).getVertice() == auxAristas->ConsultarDestino()){//seria "donde va la arista"
+                                            pesoYaEvaluado = (*itEtiq).getPesoAcumulado();
+                                            pesoYaEvaluadoDouble = (*itEtiq).getPesoDouble();
+                                            encontrado++;
+                                        }
+                                        itEtiq++;
+                                    }
+                                    if(((modo == 1) && (pesoQueCarga + pesoArista < pesoYaEvaluado)) || ((modo == 2) && (pesoQueCargaDouble + pesoAristaDouble < pesoYaEvaluadoDouble))){
+                                        itEtiq = etiquetados.begin();
+                                        bool encontrado = false;
+                                        while((!encontrado) && itEtiq != etiquetados.end()){
+                                            if((*itEtiq).getVertice() == auxAristas->ConsultarDestino()){
+                                                (*itEtiq).setPesoAcumulado(pesoQueCarga + pesoArista);
+                                                (*itEtiq).setPesoDouble(pesoQueCargaDouble + pesoAristaDouble);
+                                                (*itEtiq).setIteracion(iteracion);
+                                                vistos.remove(auxAristas->ConsultarDestino());
+                                                cola.push(auxAristas->ConsultarDestino(), pesoQueCarga + pesoArista, pesoQueCarga + pesoArista, iteracion);
+                                                encontrado = true;
+                                            }
+                                            itEtiq++;
+                                        }
+                                    }
+                                    //si el por evaluar tiene mayor peso
+                                    //pesando la arista por la que le estan llegando
+                                    //mas el peso de vertice anterior
+                                    //entonces tengo que cambiar su peso acumulado
+                                    //su iteracion, y sacarlo de la lista
+                                    //de vertices que fueron visitados
+                                    //y agregarlo a la cola
+
                                     fueVisitadoAntes = true;
                                 }
                                 i++;
