@@ -1042,10 +1042,14 @@ void menu(Grafo* aTrabajar){
                             if(primeraEntrada){
                                 primeraEntrada = false;
                             }else{
-                                vistos.push_back(verticeVisitado);
+                                if(verticeVisitado != aTrabajar->obtenerVertice(auxHasta)){
+                                    vistos.push_back(verticeVisitado);
+                                }
                             }
                         }else{
-                            vistos.push_back(verticeVisitado);
+                            if(verticeVisitado != aTrabajar->obtenerVertice(auxHasta)){
+                                vistos.push_back(verticeVisitado);
+                            }
                         }
                         iteracion++;
                     }
@@ -1389,8 +1393,20 @@ void mostrarVer3(list<Etiqueta> etiquetados, Vertice* recorriendoDesde, Vertice*
                     recorriendoDesdeLocal = antecesores.front();
                     antecesores.pop_front();
                     if(recorriendoDesdeLocal == destino){
-                        bool primerRecorrido = false;
-                        mostrarVer3(etiquetados, recorriendoDesdeLocal, destino, PilaLocal, primerRecorrido, criterio, gra);
+                        int pesoEntero = 0;
+                        double pesoDouble = 0.0;
+                        pesoEntero = gra->obtenerPeso1(recorriendoDesdeLocal, recorriendoDesde);
+                        pesoDouble = gra->obtenerPeso2(recorriendoDesdeLocal, recorriendoDesde);
+                        int pesoQueTraiaElOtro = tuplaLocal.pesoAcumulado;
+                        double pesoQueTraiaDouble = tuplaLocal.pesoDouble;
+                        int anteriorDebeAcumular = pesoQueTraiaElOtro - pesoEntero;
+                        double anteriorDebeDouble = pesoQueTraiaDouble - pesoDouble;
+                        int anteriorAcumula = 0;
+                        double anteriorAcumulaDouble = 0;
+                        if(((criterio == 1) && (anteriorAcumula == anteriorDebeAcumular)) || ((criterio == 2) && (anteriorAcumulaDouble == anteriorDebeDouble))){
+                            bool primerRecorrido = false;
+                            mostrarVer3(etiquetados, recorriendoDesdeLocal, destino, PilaLocal, primerRecorrido, criterio, gra);
+                        }
                     }else{
                         int pesoEntero = 0;
                         double pesoDouble = 0.0;
