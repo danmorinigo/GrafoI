@@ -517,6 +517,11 @@ void menu(Grafo* aTrabajar){
             break;
         }
         case 11:{
+            //Se ve??
+            //primero muestro que funciona
+            //Si esta bien faltaria modulizar / modular
+            //Uso un struct Tupla(Vertice* , int peso)
+
             string auxDesde, auxHasta;
             cout << "VIAJE MENOR COSTO (Ver II)\n";
             cout << "Desde: ";
@@ -535,6 +540,8 @@ void menu(Grafo* aTrabajar){
                                                 //los vertices a los cuales debe visitar
                 colaMaestra.push(aTrabajar->obtenerVertice(auxDesde));  //Comienza desde
                                                                         //la salida
+                                                                        //si prueba y error y viendo
+                                                                        //pseudocodigos en youtube
                 queue<Vertice*> colaAuxiliar;   //En cada iteracion guardo los
                                                 //vertices que hay que visitar
                                                 //en la siguiente iteracion
@@ -549,6 +556,11 @@ void menu(Grafo* aTrabajar){
                 //------------------------------------------------------
                 //Armo la lista de etiquetas con todos los vertices del grafo
                 //Todos los etiquetas (vertices) tendran peso e iteracion = 0
+                //Hice ua clase etiquetas
+                //Ahi tipo voy guardando los nodos, sus ancestros,
+                //pero bueno ahi escribi mas o menos
+                //Si entran todos los vertices
+                //Sin peso ni antecesores
                 Vertice* verticeEnGrafo = aTrabajar->obtenerPrimero();
                 while(verticeEnGrafo){
                     Etiqueta ingresante(verticeEnGrafo);
@@ -558,6 +570,8 @@ void menu(Grafo* aTrabajar){
                 //------------------------------------------------------
                 Vertice* verticeVisitado;
                 //Unico vertice en la cola, al entrar, es el vertice de partida
+                //
+                //claro si
                 while(!colaMaestra.empty()){
                     verticeVisitado = colaMaestra.front();
                     colaMaestra.pop();  //elimino de la cola vertice que estoy visitando
@@ -637,12 +651,15 @@ void menu(Grafo* aTrabajar){
                                     //Si peso total (acumulado del vertice visitado + arista) menor
                                     //al peso acumulado del vertice destino de la arista
                                     //Cambio su anterior, su peso acumulado e iteracion
-                                    if(pesoTotal < suPeso){
+                                    //Del vertice que estoy mirando seria, o sea el vertice destino de la arista
+                                    if(pesoTotal < suPeso){ //Te muestro los metodos
                                         auxDestino.setAnterior(verticeVisitado);
                                         auxDestino.setPesoAcumulado(miPeso + pesoArista);
                                         auxDestino.setIteracion(iteracion);
                                     }else if(pesoTotal == suPeso){  //Si es igual, agrego un nuevo anterior
                                                                     //y cambio iteracion
+                                                                    //iteracion nada, lo saque de no se que clase
+                                                                    //per no le encontre utilidad hasta ahora
                                         auxDestino.sumoAnterior(verticeVisitado);
                                         auxDestino.setIteracion(iteracion);
                                     }
@@ -668,6 +685,10 @@ void menu(Grafo* aTrabajar){
                         //colaAuxiliar tiene los vertices evaluados arriba.
                         //auxParaCola es una lista, la lista fue lo que se me ocurrio para poder ordenar
                         //los vertices segun su peso acumulado.
+                        //si va bien
+                        //Lo unico en el codigo
+                        //lo que sigue, la forma en que ordeno no se si esta bien
+                        //uso una lista
 
                         while(!colaAuxiliar.empty()){
                             //Lista vacia, agrego elemento de la colaAuxiliar, luego lo retiro de la cola
@@ -692,6 +713,10 @@ void menu(Grafo* aTrabajar){
                                     //Si pesoNuevo es menor o igual a pesoLista inserto en esa posicion
                                     //de la lista el vertice que esta en la colaAuxiliar, y lo retiro de
                                     //la cola
+                                    //La cola auxiliar tiene los vertices que revise recien pero no estan ordenados
+                                    //y los quiero ordenar del menor a mayor peso
+                                    //para pasarlo a la cola maestra ya ordenados
+
                                     if(pesoNuevo <= pesoEnLista){
                                     //if(pesoEnLista <= pesoNuevo){
                                         auxParaCola.insert(i, colaAuxiliar.front());
@@ -712,6 +737,8 @@ void menu(Grafo* aTrabajar){
 
                         //Tengo la lista ordenada, de menor a mayor segun su peso (peso de arista)
                         //y paso los vertices a la colaMaestra
+                        //si listas pilas y colas
+                        //mostrar ahi te muestro
                         while(!auxParaCola.empty()){
                             colaMaestra.push(auxParaCola.front());
                             auxParaCola.pop_front();
@@ -797,6 +824,7 @@ void menu(Grafo* aTrabajar){
                     inicioRecorrido.push_front(aTrabajar->obtenerVertice(auxHasta));
                     stack<Tupla> pilaTuplas;
                     bool primerLlamado = true;
+
                     mostrarVer2(etiquetados, inicioRecorrido, aTrabajar->obtenerVertice(auxDesde), pilaTuplas, primerLlamado);
                     //-----------------------------------------------------
                     cout << "-------------------------------------------------\n";
@@ -940,6 +968,8 @@ void mostrarRuta(list<Vertice*> anteriores, list<Etiqueta> etiquetas, stack<Vert
     // inicio longitud 0 no puede pasar!!
     //      Cartel mostrando un error
 void mostrarVer2(list<Etiqueta> etiquetados, list<Vertice*> recorriendoDesde, Vertice* destino, stack<Tupla> caminoRecorrido, bool primeraPasada){
+    //creo que no
+
     stack<Tupla> PilaLocal = caminoRecorrido;//entra vacio
     Tupla tuplaLocal;
     Vertice* aux;

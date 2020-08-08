@@ -10,13 +10,13 @@ Etiqueta::~Etiqueta(){
 }
 
 void Etiqueta::setAnterior(Vertice* anterior){
-    while(!this->anterior.empty()){
-        (this->anterior).pop_front();
+    while(!this->anterior.empty()){// aca lo reemplaza
+        (this->anterior).pop_front();//Digamos que reemplaza a el o los anteriores
     }
-    (this->anterior).push_front(anterior);
+    (this->anterior).push_front(anterior);//inserta este peso
 }
 void Etiqueta::sumoAnterior(Vertice* anterior){
-    this->anterior.push_back(anterior);
+    this->anterior.push_back(anterior);//aca agrega un nodo a la lista
     //this->anterior = anterior;
 }
 void Etiqueta::setPesoAcumulado(int peso){
