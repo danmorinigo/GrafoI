@@ -63,12 +63,12 @@ int main()
     }
     return 0;
     */
-    gra->agregarArista(gra->obtenerVertice("TIJ"), gra->obtenerVertice("MTY"), 800, 1.5);
-    gra->agregarArista(gra->obtenerVertice("MTY"), gra->obtenerVertice("BJX"), 700, 2.9);
-    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MTY"), 450, 10.5);
-    gra->agregarArista(gra->obtenerVertice("MZT"), gra->obtenerVertice("TIJ"), 400, 6.6);
+    gra->agregarArista(gra->obtenerVertice("TIJ"), gra->obtenerVertice("MTY"), 30, 1.5);//800
+    gra->agregarArista(gra->obtenerVertice("MTY"), gra->obtenerVertice("BJX"), 125, 2.9);//700
+    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MTY"), 125, 10.5);//450
+    gra->agregarArista(gra->obtenerVertice("MZT"), gra->obtenerVertice("TIJ"), 20, 6.6);//400
     gra->agregarArista(gra->obtenerVertice("MZT"), gra->obtenerVertice("BJX"), 300, 7.61);
-    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MZT"), 500, 10.36);
+    gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MZT"), 200, 10.36);//500
     gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("BJX"), 250, 45.36);
     gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MEX"), 500, 111.9);
     gra->agregarArista(gra->obtenerVertice("CUN"), gra->obtenerVertice("GDL"), 650, 10.97);
@@ -78,7 +78,7 @@ int main()
     gra->agregarArista(gra->obtenerVertice("BJX"), gra->obtenerVertice("SAN"), 400, 29.9);//900
     gra->agregarArista(gra->obtenerVertice("SAN"), gra->obtenerVertice("MID"), 450, 11.56);//1200
     gra->agregarArista(gra->obtenerVertice("TAM"), gra->obtenerVertice("MID"), 500, 78.2);//450
-    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("MID"), 450, 18.25);
+    gra->agregarArista(gra->obtenerVertice("MEX"), gra->obtenerVertice("MID"), 5000, 18.25);//450
     gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("FAN"), 630, 26.33);
     gra->agregarArista(gra->obtenerVertice("MID"), gra->obtenerVertice("CIF"), 350, 4.66);
 
