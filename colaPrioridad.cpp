@@ -7,7 +7,7 @@ ColaPrioridad::ColaPrioridad(int criterioOrden){
     if(MEMORIA) std::cout << "Constructor ColaPrioridad (" << this << ")\n";
 }
 void ColaPrioridad::push(Vertice* evaluado, int pesoEntero, double pesoDouble, int iteracion){
-    if(!primero){
+    if(!primero){//cola vacia
         primero = new NodoColaPrioridad(evaluado, iteracion, pesoEntero, pesoDouble);
         primeroSegunPrioridad = primero;
         ultimo = primero;
@@ -69,7 +69,16 @@ void ColaPrioridad::push(Vertice* evaluado, int pesoEntero, double pesoDouble, i
 bool ColaPrioridad::vacia(){
     return (primero == 0);
 }
-Vertice* ColaPrioridad::top(){
+int ColaPrioridad::topPrioridad(){
+    return this->primero->getPrioridad();
+}
+int ColaPrioridad::topEntero(){
+    return this->primero->getEntero();
+}
+double ColaPrioridad::topDouble(){
+    return this->primero->getDouble();
+}
+Vertice* ColaPrioridad::topVertice(){
     return this->primero->obtenerVertice();
 }
 void ColaPrioridad::pop(){

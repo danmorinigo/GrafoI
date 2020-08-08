@@ -13,7 +13,10 @@ public:
     ColaPrioridad(int criterioOrden);
     bool vacia();
     Vertice* topAndPop();
-    Vertice* top();
+    Vertice* topVertice();
+    int topPrioridad();
+    int topEntero();
+    double topDouble();
     void pop();
     void push(Vertice* evaluado, int pesoEntero, double pesoDouble, int iteracion);
     /*

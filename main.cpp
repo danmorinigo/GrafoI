@@ -8,7 +8,7 @@
 #include "vertice.h"
 #include "grafo.h"
 #include "etiqueta.h"
-
+#include "colaPrioridad.h"
 using namespace std;
 
 void menu(Grafo* aTrabajar);
@@ -30,6 +30,8 @@ void mostrarPilaTuplas(stack<Tupla> aMostrar);
 
 int main()
 {
+    ColaPrioridad testCola(2);
+
     srand(time(NULL));
 
     string estaciones[] = {"TIJ", "MTY", "MZT", "BJX", "GDL", "SAN", "TAM", "MEX", "MID", "CUN", "FAN", "CIF"};
@@ -37,6 +39,17 @@ int main()
     for(int i = 0; i < 12; i++){
         gra->agregarVertice(estaciones[i]);
     }
+    testCola.push(gra->obtenerVertice("TIJ"), 8,2.3,1);
+    testCola.push(gra->obtenerVertice("MTY"), 7,5.8,1);
+    testCola.push(gra->obtenerVertice("MZT"), 3,3.33,1);
+    testCola.push(gra->obtenerVertice("BJX"), 5,1.9,1);
+    testCola.push(gra->obtenerVertice("SAN"), 1,0.1,2);
+    while(!testCola.vacia()){
+        cout << testCola.topVertice()->obtenerNombreVertice() << " peso2: ";
+        cout << testCola.topDouble() << " iteracion : " << testCola.topPrioridad() << endl;
+        testCola.pop();
+    }
+    return 0;
     gra->agregarArista(gra->obtenerVertice("TIJ"), gra->obtenerVertice("MTY"), 800, 0);
     gra->agregarArista(gra->obtenerVertice("MTY"), gra->obtenerVertice("BJX"), 700, 0);
     gra->agregarArista(gra->obtenerVertice("GDL"), gra->obtenerVertice("MTY"), 450, 0);
